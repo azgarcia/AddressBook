@@ -6,11 +6,13 @@ using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
+using FluentValidation;
 
 namespace Application.Contacts
 {
     public class Create
     {
+        
         public class Command : IRequest 
         {
             public Guid Id { get; set; }
@@ -24,6 +26,16 @@ namespace Application.Contacts
             public string State { get; set; }
             public string PostalCode { get; set; }
             public string Notes { get; set; }
+        }
+
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(c => c.FirstName).NotEmpty();
+                RuleFor(c => c.LastName).NotEmpty();
+                RuleFor(c => c.PhoneNumber).NotEmpty();
+            }
         }
 
         public class Handler : IRequestHandler<Command>

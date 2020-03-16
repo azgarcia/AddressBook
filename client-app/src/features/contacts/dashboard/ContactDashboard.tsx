@@ -1,67 +1,32 @@
-import React, { SyntheticEvent } from 'react';
+import React, {  useContext, useEffect } from 'react';
 import { Grid, List } from 'semantic-ui-react';
-import { IContact } from '../../../app/models/contact';
-import { ContactList } from './ContactList';
-import { ContactDetails } from '../details/ContactDetails';
-import { ContactForm } from '../form/ContactForm';
+import {observer} from 'mobx-react-lite';
+import ContactList from './ContactList';
+import ContactStore from '../../../app/stores/contactStore'
+import { LoadingComponent } from '../../../app/layout/LoadingComponent';
 
-interface IProps {
-    contacts: IContact[];
-    selectContact: (id: string) => void;
-    selectedContact: IContact | null;
-    editMode: boolean;
-    setEditMode: (editMode: boolean) => void;
-    setSelectedContact: (contact: IContact | null) => void;
-    createContact: (contact: IContact) => void;
-    editContact: (contact: IContact) => void;
-    deleteContact: (e: SyntheticEvent<HTMLButtonElement>, id: string) => void;
-    submitting: boolean;
-    target: string;
-}
 
-export const ContactDashboard: React.FC<IProps> = ({
-    contacts, 
-    selectContact, 
-    selectedContact, 
-    editMode, 
-    setEditMode, 
-    setSelectedContact, 
-    createContact, 
-    editContact, 
-    deleteContact,
-    submitting,
-    target
-}) => {
+
+const ContactDashboard: React.FC = () => {
+
+    const contactStore = useContext(ContactStore);
+
+    useEffect(() => {
+        contactStore.loadContacts();
+      }, [contactStore]);
+      
+      if (contactStore.loadingInitial) return <LoadingComponent content="Loading address book..."/>;
+
     return (
-       <Grid>
-           <Grid.Column width={10}>
-               <ContactList 
-                    contacts={contacts} 
-                    selectContact={selectContact} 
-                    deleteContact={deleteContact}
-                    submitting={submitting}
-                    target={target}
-                />
-           </Grid.Column>
-
-           <Grid.Column width={6}>
-               {selectedContact && !editMode && (
-               <ContactDetails 
-                    contact={selectedContact} 
-                    setEditMode={setEditMode} 
-                    setSelectedContact={setSelectedContact}
-                    />)}
-               {editMode && (
-               <ContactForm 
-               key={selectedContact && selectedContact.id || 0} 
-               setEditMode={setEditMode} 
-               contact={selectedContact!} 
-               createContact={createContact} 
-               editContact={editContact}
-               submitting={submitting}
-               />)}
-               
-           </Grid.Column>
-       </Grid>
+      <Grid relaxed centered columns={1} >
+      <Grid.Row >
+        <Grid.Column width='10'>
+           <ContactList />
+        </Grid.Column>
+        
+      </Grid.Row>
+    </Grid>
     )
 }
+
+export default observer(ContactDashboard);

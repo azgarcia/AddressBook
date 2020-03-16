@@ -16,7 +16,7 @@ const requests = {
 }
 
 const Contacts = {
-    list: () => requests.get('/contacts'),
+    list: (): Promise<IContact[]> => requests.get('/contacts'),
     details: (id: string) => requests.get(`/contacts/${id}`),
     create: (contact: IContact) => requests.post('/contacts', contact),
     update: (contact: IContact) => requests.put(`/contacts/${contact.id}`, contact),
